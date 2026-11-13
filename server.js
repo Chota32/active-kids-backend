@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const { MongoClient } = require('mongodb');
 
@@ -9,6 +10,15 @@ app.use(express.json());
 app.use((req, res, next) => {
   console.log(new Date().toISOString(), req.method, req.url, req.body || '');
   next();
+});
+
+// Static file middleware: returns lesson images, or an error if not found
+app.use('/images', (req, res) => {
+  res.sendFile(req.path, { root: path.join(__dirname, 'images') }, (err) => {
+    if (err) {
+      res.status(404).json({ error: 'Image not found: ' + req.path });
+    }
+  });
 });
 
 const client = new MongoClient(process.env.MONGODB_URI);
