@@ -1,10 +1,13 @@
 require('dotenv').config();
-const path = require('path');
 const express = require('express');
 const { MongoClient } = require('mongodb');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
+
+const client = new MongoClient(process.env.MONGODB_URI);
+let db;
 
 // Logger middleware: prints every request to the console
 app.use((req, res, next) => {
@@ -21,16 +24,19 @@ app.use('/images', (req, res) => {
   });
 });
 
-const client = new MongoClient(process.env.MONGODB_URI);
-let db;
+// GET /lessons: return all lessons as JSON
+app.get('/lessons', (req, res) => {
+  db.collection('lesson').find({}).toArray()
+    .then(lessons => res.json(lessons))
+    .catch(err => res.status(500).json({ error: err.message }));
+});
 
-app.get('/', (req, res) => res.send('Server is running'));
-
+// Connect to MongoDB, then start the server
 const PORT = process.env.PORT || 3000;
 
 client.connect()
   .then(() => {
-    db = client.db('afterschool');
+    db = client.db('activekids');
     console.log('Connected to MongoDB Atlas');
     app.listen(PORT, () => console.log('Server running on port ' + PORT));
   })
