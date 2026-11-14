@@ -31,6 +31,15 @@ app.get('/lessons', (req, res) => {
     .catch(err => res.status(500).json({ error: err.message }));
 });
 
+// POST /orders: save a new order to the "order" collection
+app.post('/orders', (req, res) => {
+  const { name, phone, lessonIDs, spaces } = req.body;
+
+  db.collection('order').insertOne({ name, phone, lessonIDs, spaces })
+    .then(result => res.status(201).json({ message: 'Order saved', id: result.insertedId }))
+    .catch(err => res.status(500).json({ error: err.message }));
+});
+
 // Connect to MongoDB, then start the server
 const PORT = process.env.PORT || 3000;
 
