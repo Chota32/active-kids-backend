@@ -15,6 +15,17 @@ app.use((req, res, next) => {
   next();
 });
 
+// CORS middleware: allow the front-end (on another website) to call this API
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 // Static file middleware: returns lesson images, or an error if not found
 app.use('/images', (req, res) => {
   res.sendFile(req.path, { root: path.join(__dirname, 'images') }, (err) => {
