@@ -9,7 +9,7 @@ app.use(express.json());
 const client = new MongoClient(process.env.MONGODB_URI);
 let db;
 
-// Logger middleware: prints every request to the console
+// Logger middleware
 app.use((req, res, next) => {
   console.log(new Date().toISOString(), req.method, req.url, req.body || '');
   next();
